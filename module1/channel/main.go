@@ -24,7 +24,7 @@ func Producer(c chan int) {
 }
 
 // Consumer 每秒打印一个数据，队列为空时阻塞
-func Consumer(c chan int) {
+func Consumer(c chan int, d chan bool) {
 	timer := time.NewTicker(time.Second)
 	go func() {
 		count := 0
@@ -36,6 +36,9 @@ func Consumer(c chan int) {
 			case <-timer.C:
 				log.Println("接受超时了！！！")
 				return
+			case <-d:
+				log.Println("主动结束子协程***")
+				return
 			default:
 				fmt.Printf("没有接受到数据～～～")
 			}
@@ -46,12 +49,14 @@ func Consumer(c chan int) {
 func main() {
 	// 队列： 长度 10 ，元素类型 int
 	ch := make(chan int, 10)
-
+	done := make(chan bool)
 	defer close(ch)
 
 	Producer(ch)
 	time.Sleep(5 * time.Second)
-	Consumer(ch)
+	Consumer(ch, done)
+
+	close(done)
 	time.Sleep(20 * time.Second)
 	fmt.Println("Exit!")
 }
