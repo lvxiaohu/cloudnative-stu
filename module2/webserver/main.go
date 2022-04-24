@@ -50,6 +50,7 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	// 给 Response 写入数据
 	io.WriteString(w, "200")
+
 }
 
 func GetOSENV(w http.ResponseWriter, r *http.Request) {
