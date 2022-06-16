@@ -273,7 +273,8 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
-  type: LoadBalancer
+  type: NodePort 
+  #type: LoadBalancer
   externalTrafficPolicy: Local
   ipFamilyPolicy: SingleStack
   ipFamilies:
@@ -296,7 +297,7 @@ spec:
 ---
 # Source: ingress-nginx/templates/controller-deployment.yaml
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet 
 metadata:
   labels:
     helm.sh/chart: ingress-nginx-4.0.10
@@ -401,6 +402,7 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       serviceAccountName: ingress-nginx
+      hostNetwork: true
       terminationGracePeriodSeconds: 300
       volumes:
         - name: webhook-cert

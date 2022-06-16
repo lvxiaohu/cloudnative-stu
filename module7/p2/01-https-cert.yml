@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: other-lvxiaohu-cn-tls
+#  namespace: ingress-nginx
+spec:
+  # The secretName will store certificate content
+  secretName: other-lvxiaohu-cn-tls
+  dnsNames:
+  # Replace to your real DNS name
+  - other.lvxiaohu.cn
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: https-go-web
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  #ingressClassName: nginx
+  tls:
+    - hosts:
+      - web.lvxiaohu.cn
+      secretName: web-lvxiaohu-cn-tls
+  rules:
+  - host: "web.lvxiaohu.cn"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: "https-go-web-service"
+            port:
+              number: 80

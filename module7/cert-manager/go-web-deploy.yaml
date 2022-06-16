@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: https-go-web-deployment
+  labels:
+    app: https-go-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: https-go-web
+  template:
+    metadata:
+      labels:
+        app: https-go-web
+    spec:
+      containers:
+      - name: https-go-web
+        image: kuokou1/go-web-server:v1.0 
+        ports:
+        - containerPort: 8081
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+            httpHeaders:
+            - name: https-go-web
+              value: k8s
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "700m"
+          requests:
+            memory: "200Mi"
+            cpu: "100m"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","while killall -0 docker-web-server; do sleep 1; done"]
