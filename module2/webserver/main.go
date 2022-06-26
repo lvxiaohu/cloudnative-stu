@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"github.com/lvxiaohu/cloudnative-stu/module2/webserver/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"io"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 //接收客户端 request，并将 request 中带的 header 写入 response header
@@ -57,6 +61,14 @@ func GetOSENV(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, os.Getenv("VERSION"))
 }
 
+func images(w http.ResponseWriter, r *http.Request) {
+	timer := metrics.NewTimer()
+	defer timer.ObserveTotal()
+	randInt := rand.Intn(2000)
+	time.Sleep(time.Millisecond * time.Duration(randInt))
+	w.Write([]byte(fmt.Sprintf("<h1>%d<h1>", randInt)))
+}
+
 func main() {
 	// 给系统设置一个 VERSION 变量
 	os.Setenv("VERSION", "Linux-4.5")
@@ -64,6 +76,8 @@ func main() {
 	http.HandleFunc("/", root)
 	http.HandleFunc("/healthz", healthz)
 	http.HandleFunc("/version", GetOSENV)
+	http.HandleFunc("/images", images)
+	http.Handle("/metrics", promhttp.Handler())
 
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
