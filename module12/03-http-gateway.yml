@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: go-http-server
+spec:
+  gateways:
+    - go-http-server
+  hosts:
+    - go-http-server.lvxiaohu.cn
+  http:
+    - match:
+        - port: 80
+      route:
+        - destination:
+            host: go-http-server.httpmesh.svc.cluster.local 
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: go-http-server
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - go-http-server.lvxiaohu.cn
+      port:
+        name: http-go-http-server
+        number: 80
+        protocol: HTTP
+
